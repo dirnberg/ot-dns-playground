@@ -1,12 +1,11 @@
 ````markdown
-# ot-dns-playground
+# OT-DNS-Playground
 
-A hands-on Docker playground for spinning up lightweight, authoritative **dnsmasq** servers in real-world OT scenarios: Substation, Production Plant, Hospital Devices, Building Automation, and CCTV.
+A self-contained Docker Compose lab that runs:
+- **`ot-dns`**: a dnsmasq server serving your OT zone (`sb110.ele.at`)  
+- **`dns-capture`**: a one-shot tcpdump container capturing all DNS traffic to a PCAP  
 
-## 🔧 Prerequisites
-
-- Docker & Docker Compose installed  
-- Basic familiarity with environment variables
+---
 
 ## 🚀 Quick Start
 
@@ -16,81 +15,105 @@ A hands-on Docker playground for spinning up lightweight, authoritative **dnsmas
    cd ot-dns-playground
 ````
 
-2. **Choose a scenario** by setting the `SCENARIO` environment variable:
+2. **Prepare directories**
 
    ```bash
-   export SCENARIO=substation
+   mkdir logs pcaps
    ```
 
-3. **Launch the DNS server**
+3. **Launch services**
 
    ```bash
-   docker-compose up -d --build
+   docker-compose up -d
    ```
 
-4. **Test** example (Substation PLC):
+   * `ot-dns` listens on UDP & TCP port 53
+   * `dns-capture` writes `pcaps/dns-queries.pcap` then exits
+
+4. **Verify containers are running**
 
    ```bash
-   dig @127.0.0.1 plc1.substation.energy.local +short
+   docker-compose ps
    ```
 
-## 📂 Directory Structure
+---
 
-```text
-ot-dns-playground/
-├── LICENSE
-├── README.md
-├── docker-compose.yml
-├── templates/
-│   ├── Dockerfile.template
-│   ├── dnsmasq.conf.template
-│   └── hosts.template
-└── scenarios/
-    ├── substation/
-    │   └── config/
-    │       ├── dnsmasq.conf
-    │       └── hosts
-    ├── production-plant/
-    ├── hospital-devices/
-    ├── building-automation/
-    └── cctv/
-```
+## 📋 Checking Logs
 
-## 🎯 Available Scenarios
+* **dnsmasq startup & query logs**
 
-* **substation**: Electrical substation network
-* **production-plant**: Manufacturing OT environment
-* **hospital-devices**: Medical devices network
-* **building-automation**: Smart building control
-* **cctv**: IP cameras and video recorders
+  ```bash
+  docker logs ot-dns
+  tail -f logs/dnsmasq.log
+  ```
+* **Capture summary**
 
-To run any scenario:
+  ```bash
+  tcpdump -r pcaps/dns-queries.pcap -n
+  # or open in Wireshark
+  ```
+
+---
+
+## ✏️ Adding a New Host Record
+
+1. **Edit** `hosts` (or `dnsmasq.conf` if using `host-record` lines):
+
+   ```text
+   # example in hosts:
+   10.1.123.45  new-device.sb110.ele.at  new-device
+   ```
+2. **Reload dnsmasq** (no downtime):
+
+   ```bash
+   docker kill --signal=HUP ot-dns
+   ```
+3. **Confirm** in logs:
+
+   ```bash
+   docker logs ot-dns | grep new-device
+   ```
+
+---
+
+## 🔄 Restarting the DNS Service
+
+If you’ve changed core config (`dnsmasq.conf`, `cname.conf`), a full restart is easiest:
 
 ```bash
-export SCENARIO=<scenario-name>
-docker-compose up -d --build
+docker-compose restart ot-dns
 ```
 
-## ✨ Adding a New Scenario
+---
 
-1. Copy an existing folder under `scenarios/`:
+## 🔍 Feature: Live DNS Queries
 
-   ```bash
-   cp -r scenarios/substation scenarios/my-new-scenario
-   ```
+Send queries against your local DNS:
 
-2. Edit `scenarios/my-new-scenario/config/dnsmasq.conf` and `scenarios/my-new-scenario/config/hosts` with your domain and IPs.
+```bash
+# Forward lookup
+nslookup bay1-controller1.sb110.ele.at 127.0.0.1
 
-3. Start it:
+# Short-name lookup
+nslookup new-device 127.0.0.1
 
-   ```bash
-   export SCENARIO=my-new-scenario
-   docker-compose up -d --build
-   ```
+# Reverse lookup
+nslookup 10.1.110.1 127.0.0.1
 
-## 📄 License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
+# PowerShell alternative
+Resolve-DnsName -Name bay1-controller1.sb110.ele.at -Server 127.0.0.1
 ```
+
+---
+
+## 🛑 Stopping the Lab
+
+```bash
+docker-compose down
 ```
+
+This stops and removes all containers, networks and the one-shot capture service.
+
+---
+
+Enjoy your on-prem OT DNS playground! 🚧🛠️

@@ -1,0 +1,24 @@
+services:
+  dns:
+    image: andyshinn/dnsmasq:latest
+    container_name: ot-dns
+    restart: unless-stopped
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf:ro
+      - ./hosts:/etc/dnsmasq.d/hosts:ro         # if you split hosts
+      - ./logs:/var/log/dnsmasq
+
+  capture:
+    image: nicolaka/netshoot
+    container_name: dns-capture
+    network_mode: host
+    depends_on:
+      - dns
+    command: >
+      sh -c "tcpdump -i eth0 -s 0 -w /pcaps/dns-queries.pcap port 53"
+    volumes:
+      - ./pcaps:/pcaps
+    restart: "no"

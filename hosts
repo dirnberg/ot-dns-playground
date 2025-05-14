@@ -1,0 +1,16 @@
+# IP         FQDN                            SHORT      
+10.1.110.1   bay1-controller1.sb110.ele.at   bay1-controller1
+10.1.110.2   bay1-controller1.sb110.ele.at   bay1-controller1
+10.1.111.1   bay2-relay1.sb110.ele.at        bay2-relay1
+10.1.111.2   bay2-relay1.sb110.ele.at        bay2-relay1
+10.1.112.10  transformer1.sb110.ele.at       transformer1
+10.1.113.5   rtu1.sb110.ele.at               rtu1
+10.1.114.100 scada-primary.sb110.ele.at      scada-primary
+10.1.114.101 scada-secondary.sb110.ele.at    scada-secondary
+10.1.115.20  hmi-engineer.sb110.ele.at       hmi-eng
+10.1.115.21  hmi-operator.sb110.ele.at       hmi-op
+10.1.116.50  historian.sb110.ele.at          hist
+10.1.116.51  historian.sb110.ele.at          hist
+10.1.116.60  ntp1.sb110.ele.at               timesrv
+10.1.120.70  vpn-gw.sb110.ele.at             vpn-gw
+10.1.122.90  cctv-nvr.sb110.ele.at           cctv-nvr
