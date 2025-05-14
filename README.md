@@ -1,4 +1,3 @@
-````markdown
 # OT-DNS-Playground
 
 A self-contained Docker Compose lab that runs:
