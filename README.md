@@ -1,13 +1,4 @@
 ````markdown
-# OT-DNS-Playground
-
-A self-contained Docker Compose lab that runs:
-- **`ot-dns`**: a dnsmasq server serving your OT zone (`sb110.ele.at`)  
-- **`dns-capture`**: a one-shot tcpdump container capturing all DNS traffic to a PCAP  
-
----
-
-## 🚀 Quick Start
 
 1. **Clone the repo**  
    ```bash
