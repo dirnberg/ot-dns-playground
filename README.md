@@ -12,7 +12,7 @@ A hands-on Docker playground for spinning up lightweight, authoritative **dnsmas
 
 1. **Clone the repo**  
    ```bash
-   git clone https://github.com/<your-org>/ot-dns-playground.git
+   git clone https://github.com/dirnberg/ot-dns-playground.git
    cd ot-dns-playground
 ````
 
