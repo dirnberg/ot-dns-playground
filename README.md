@@ -3,8 +3,19 @@
 
 A fully self-contained Docker Compose lab for on-prem OT DNS, featuring:
 
-- **`ot-dns`**: a `dnsmasq` server serving your OT zone (`sb110.ele.at`)
-- **`dns-capture`**: a one-shot `tcpdump` container capturing all DNS traffic into a PCAP
+- **`ot-dns`** — a `dnsmasq` server serving your OT zone (`sb110.ele.at`)
+- **`dns-capture`** — a one-shot `tcpdump` container capturing all DNS traffic into a PCAP
+
+---
+
+## 📖 Table of Contents
+
+1. [Quick Start](#-quick-start)  
+2. [Viewing Logs & Captures](#-viewing-logs--captures)  
+3. [Adding or Updating Host Records](#-adding-or-updating-host-records)  
+4. [Restarting the DNS Service](#-restarting-the-dns-service)  
+5. [Live DNS Queries](#-live-dns-queries)  
+6. [Teardown](#-teardown)  
 
 ---
 
@@ -16,7 +27,7 @@ A fully self-contained Docker Compose lab for on-prem OT DNS, featuring:
    cd ot-dns-playground
 ````
 
-2. **Create host directories**
+2. **Create required directories**
 
    ```bash
    mkdir logs pcaps
@@ -29,9 +40,9 @@ A fully self-contained Docker Compose lab for on-prem OT DNS, featuring:
    ```
 
    * `ot-dns` listens on UDP/TCP port 53
-   * `dns-capture` writes `pcaps/dns-queries.pcap` then exits
+   * `dns-capture` writes its capture to `pcaps/dns-queries.pcap` and then exits
 
-4. **Verify running containers**
+4. **Verify containers are running**
 
    ```bash
    docker-compose ps
@@ -66,7 +77,7 @@ A fully self-contained Docker Compose lab for on-prem OT DNS, featuring:
    10.1.123.45   new-device.sb110.ele.at   new-device
    ```
 
-2. **Reload** dnsmasq without downtime:
+2. **Reload** `dnsmasq` without downtime:
 
    ```bash
    docker kill --signal=HUP ot-dns
@@ -82,7 +93,7 @@ A fully self-contained Docker Compose lab for on-prem OT DNS, featuring:
 
 ## 🔄 Restarting the DNS Service
 
-If you change core config files (`dnsmasq.conf`, `cname.conf`), perform a full restart:
+If you change core configuration files (`dnsmasq.conf`, `cname.conf`), perform a full restart:
 
 ```bash
 docker-compose restart ot-dns
@@ -92,7 +103,7 @@ docker-compose restart ot-dns
 
 ## 🔍 Live DNS Queries
 
-Test your new records or existing entries:
+Test your records against the local DNS server:
 
 ```bash
 # Forward lookup
@@ -112,7 +123,7 @@ Resolve-DnsName -Name bay1-controller1.sb110.ele.at -Server 127.0.0.1
 
 ## 🛑 Teardown
 
-Stop and remove all containers, networks and volumes:
+Stop and remove all containers, networks, and the one-shot capture service:
 
 ```bash
 docker-compose down
